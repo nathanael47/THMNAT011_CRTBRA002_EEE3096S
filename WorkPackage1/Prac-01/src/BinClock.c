@@ -226,7 +226,8 @@ void hourInc(void){
 		}
 		else{
 			printf("nope\n");
-			wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, 0);	
+			hours = 0;
+			wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, hours);	
 		}
 		//Write hours back to the RTC
 		
@@ -258,7 +259,8 @@ void minInc(void){
 		}
 		else{
 			printf("nope\n");
-			wiringPiI2CWriteReg8(RTC, MIN_REGISTER, 0);	
+			mins = 0;
+			wiringPiI2CWriteReg8(RTC, MIN_REGISTER, mins);	
 		}
 		//Write minutes back to the RTC
 		
