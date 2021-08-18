@@ -27,7 +27,7 @@ int HH,MM,SS;
 void callback_function(void){
     long interruptTime = millis();
     
-    if (interruptTime - lastInterruptTime>200){
+    if (interruptTime - lastInterruptTime<1000){
         printf("Interupt invalid \n");      
     }
     lastInterruptTime = interruptTime;
@@ -115,11 +115,11 @@ int main(void){
 		while(1){
 			//turning on the led for 1 sec 
 			digitalWrite(0, LOW);
-			printf("The LED is now on\n");
+			
 			delay(1000);
 			//turning off the led for 1 sec 
 			digitalWrite(0,HIGH);
-			printf("The LED is now off\n");
+			
 			delay(1000);	
 		}
 
