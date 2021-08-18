@@ -94,7 +94,7 @@ int main(void){
 	wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, 0x13+TIMEZONE);
 	wiringPiI2CWriteReg8(RTC, MIN_REGISTER, 0x4);
 	wiringPiI2CWriteReg8(RTC, SEC_REGISTER, 0x00);
-	
+	 
 	// Repeat this until we shut down
 	for (;;){
 		//Fetch the time from the RTC
@@ -108,7 +108,7 @@ int main(void){
 		s = hexCompensation(secs);
 		
 		// Print out the time we have stored on our RTC
-		printf("The current time is: %d:%d:%d\n", h, m, s); 
+		printf("The current time is: %d:%d:%d\n", hours, mins, secs); 
 		
 		//using a delay to make our program "less CPU hungry"
 		delay(1000); //milliseconds
