@@ -5,8 +5,8 @@
  * Further Modified By: Mark Njoroge 
  *
  * 
- * <STUDNUM_1> <STUDNUM_2>
- * Date
+ * <THMNAT011> <CRTBRA002>
+ * 18/08/2021
 */
 
 #include <signal.h> //for catching signals
@@ -32,6 +32,8 @@ void CleanUp(int sig){
 
 	//Set LED to low then input mode
 	//Logic here
+	void digitalWrite(0,LOW);
+	void pinMode(0,INPUT);
 
 
 	for (int j=0; j < sizeof(BTNS)/sizeof(BTNS[0]); j++) {
@@ -56,7 +58,8 @@ void initGPIO(void){
 	
 	//Set up the LED
 	//Write your Logic here
-
+	void pinMode(0,OUTPUT);
+	
 	
 	printf("LED and RTC done\n");
 	
@@ -68,8 +71,8 @@ void initGPIO(void){
 	
 	//Attach interrupts to Buttons
 	//Write your logic here
-	
-
+	wiringPiISR(5,INT_EDGE_RISING,&callback_function);
+	wiringPiISR(30,INT_EDGE_RISING,&callback_function);
 
 	printf("BTNS done\n");
 	printf("Setup done\n");
@@ -86,17 +89,32 @@ int main(void){
 
 	//Set random time (3:04PM)
 	//You can comment this file out later
-	wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, 0x13+TIMEZONE);
-	wiringPiI2CWriteReg8(RTC, MIN_REGISTER, 0x4);
-	wiringPiI2CWriteReg8(RTC, SEC_REGISTER, 0x00);
+	//wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, 0x13+TIMEZONE);
+	//wiringPiI2CWriteReg8(RTC, MIN_REGISTER, 0x4);
+	//wiringPiI2CWriteReg8(RTC, SEC_REGISTER, 0x00);
 	
 	// Repeat this until we shut down
 	for (;;){
 		//Fetch the time from the RTC
 		//Write your logic here
+		hours = wiringPiI2CReadReg8(RTC, HOUR_REGISTER);
+		mins = wiringPiI2CReadReg8(RTC, MIN_REGISTER);
+		secs = wiringPiI2CReadReg8(RTC, SEC_REGISTER);
+		
 		
 		//Toggle Seconds LED
 		//Write your logic here
+		while(1){
+			//turning on the led for 1 sec 
+			digitalWrite(0, LOW);
+			printf("The LED is now on\n");
+			delay(1000);
+			//turning off the led for 1 sec 
+			digitalWrite(0,HIGH);
+			printf("The LED is now off\n");
+			delay(1000);	
+		}
+
 		
 		// Print out the time we have stored on our RTC
 		printf("The current time is: %d:%d:%d\n", hours, mins, secs);
@@ -189,8 +207,15 @@ void hourInc(void){
 	if (interruptTime - lastInterruptTime>200){
 		printf("Interrupt 1 triggered, %x\n", hours);
 		//Fetch RTC Time
+		hours = wiringPiI2CReadReg8(RTC, HOUR_REGISTER);
 		//Increase hours by 1, ensuring not to overflow
+		if(hours = 23){
+			hours = 00;
+		}
+		else{
+			hours = hours + 1;		}
 		//Write hours back to the RTC
+		wiringPiI2CWriteReg8(RTC, HOUR_REGISTER,hours);
 	}
 	lastInterruptTime = interruptTime;
 }
@@ -207,8 +232,16 @@ void minInc(void){
 	if (interruptTime - lastInterruptTime>200){
 		printf("Interrupt 2 triggered, %x\n", mins);
 		//Fetch RTC Time
+		mins = wiringPiI2CReadReg8(RTC, MIN_REGISTER);
 		//Increase minutes by 1, ensuring not to overflow
+		if(mins = 59){
+			mins = 00;
+		}
+		else{
+			mins = mins + 1;		
+		}
 		//Write minutes back to the RTC
+		wiringPiI2CWriteReg8(RTC, MIN_REGISTER, mins);
 	}
 	lastInterruptTime = interruptTime;
 }
