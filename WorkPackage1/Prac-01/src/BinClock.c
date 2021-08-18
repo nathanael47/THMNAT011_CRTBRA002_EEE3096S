@@ -108,7 +108,7 @@ int main(void){
 		//s = hexCompensation(secs);
 		
 		// Print out the time we have stored on our RTC
-		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
+		printf("The current time is: %d:%d:%d\n", hours, mins, secs); 
 		
 		//using a delay to make our program "less CPU hungry"
 		delay(1000); //milliseconds
@@ -118,7 +118,7 @@ int main(void){
 		while(1){
 			//turning on the led for 1 sec 
 			digitalWrite(0, LOW);
-			printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
+			printf("The current time is: %d:%d:%d\n", hours, mins, secs); 
 			delay(1000);
 			//turning off the led for 1 sec 
 			digitalWrite(0,HIGH);
@@ -211,7 +211,7 @@ void hourInc(void){
 	long interruptTime = millis();
 
 	if (interruptTime - lastInterruptTime>200){
-		printf("Interrupt 1 triggered, %x\n",hours);
+		printf("Interrupt 1 triggered, %d\n",hours);
 		//Fetch RTC Time
 		
 		
@@ -230,7 +230,7 @@ void hourInc(void){
 		}
 		//Write hours back to the RTC
 		
-		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
+		printf("The current time is: %d:%d:%d\n", hours, mins, secs); 
 	}
 	lastInterruptTime = interruptTime;
 }
@@ -262,7 +262,7 @@ void minInc(void){
 		}
 		//Write minutes back to the RTC
 		
-		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
+		printf("The current time is: %d:%d:%d\n", hours, mins, secs); 
 	}
 	lastInterruptTime = interruptTime;
 }
