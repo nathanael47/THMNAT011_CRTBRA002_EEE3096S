@@ -219,13 +219,13 @@ void hourInc(void){
 		//Increase hours by 1, ensuring not to overflow
 		if(hours < 23){
 			hours = wiringPiI2CReadReg8(RTC, HOUR_REGISTER);
-			printf("yep");
-			hours = hours+1
+			printf("yep\n");
+			hours = hours+1;
 			wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, hours);
 			
 		}
 		else{
-			printf("nope");
+			printf("nope\n");
 			wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, 0);	
 		}
 		//Write hours back to the RTC
@@ -250,14 +250,14 @@ void minInc(void){
 		
 		
 		//Increase minutes by 1, ensuring not to overflow
-		if(temp_mins < 59){
-			printf("yep");
+		if(mins < 59){
+			printf("yep\n");
 			mins = wiringPiI2CReadReg8(RTC, MIN_REGISTER);
-			mins = mins + 1
+			mins = mins + 1;
 			wiringPiI2CWriteReg8(RTC, MIN_REGISTER, mins);
 		}
 		else{
-			printf("nope");
+			printf("nope\n");
 			wiringPiI2CWriteReg8(RTC, MIN_REGISTER, 0);	
 		}
 		//Write minutes back to the RTC
