@@ -103,12 +103,12 @@ int main(void){
 		mins = wiringPiI2CReadReg8(RTC, MIN_REGISTER);
 		secs = wiringPiI2CReadReg8(RTC, SEC_REGISTER);
 		
-		h = hexCompensation(hours);
-		m = hexCompensation(mins);
-		s = hexCompensation(secs);
+		//h = hexCompensation(hours);
+		//m = hexCompensation(mins);
+		//s = hexCompensation(secs);
 		
 		// Print out the time we have stored on our RTC
-		printf("The current time is: %d:%d:%d\n", h, m, s); 
+		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
 		
 		//using a delay to make our program "less CPU hungry"
 		delay(1000); //milliseconds
@@ -218,13 +218,14 @@ void hourInc(void){
 		
 		//Increase hours by 1, ensuring not to overflow
 		if(temp_h == 23){
-			temp_h = 00;
+			temp_h = 0;
 		}
 		else{
 			temp_h = temp_h + 1;		
 		}
 		//Write hours back to the RTC
 		hours = wiringPiI2CWriteReg8(RTC, HOUR_REGISTER,decCompensation(temp_h));
+		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
 	}
 	lastInterruptTime = interruptTime;
 }
@@ -245,13 +246,14 @@ void minInc(void){
 		
 		//Increase minutes by 1, ensuring not to overflow
 		if(temp_mins == 59){
-			temp_mins = 00;
+			temp_mins = 0;
 		}
 		else{
 			temp_mins = temp_mins + 1;		
 		}
 		//Write minutes back to the RTC
 		mins = wiringPiI2CWriteReg8(RTC, MIN_REGISTER, decCompensation(temp_mins));
+		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
 	}
 	lastInterruptTime = interruptTime;
 }
