@@ -220,6 +220,7 @@ void hourInc(void){
 		if(temp_h < 23){
 			printf("yep");
 			temp_h++;
+			printf(toString(temp_h));
 		}
 		else{
 			printf("nope");
@@ -250,6 +251,7 @@ void minInc(void){
 		if(temp_mins < 59){
 			printf("yep");
 			temp_mins ++;
+			printf(toString(temp_mins));
 		}
 		else{
 			printf("nope");
