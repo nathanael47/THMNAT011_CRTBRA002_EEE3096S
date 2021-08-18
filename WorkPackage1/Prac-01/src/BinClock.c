@@ -218,7 +218,7 @@ void hourInc(void){
 		
 		//Increase hours by 1, ensuring not to overflow
 		if(hours < 23){
-			hours = hexCompensation(wiringPiI2CReadReg8(RTC, HOUR_REGISTER));
+			//hours = hexCompensation(wiringPiI2CReadReg8(RTC, HOUR_REGISTER));
 			printf("yep\n");
 			hours = hours+1;
 			wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, hours);
@@ -245,14 +245,14 @@ void minInc(void){
 	long interruptTime = millis();
 
 	if (interruptTime - lastInterruptTime>200){
-		printf("Interrupt 2 triggered, %x\n",mins);
+		printf("Interrupt 2 triggered, %d\n",mins);
 		//Fetch RTC Time
 		
 		
 		//Increase minutes by 1, ensuring not to overflow
 		if(mins < 59){
 			printf("yep\n");
-			mins = hexCompensation(wiringPiI2CReadReg8(RTC, MIN_REGISTER));
+			//mins = hexCompensation(wiringPiI2CReadReg8(RTC, MIN_REGISTER));
 			mins = mins + 1;
 			wiringPiI2CWriteReg8(RTC, MIN_REGISTER, mins);
 		}
