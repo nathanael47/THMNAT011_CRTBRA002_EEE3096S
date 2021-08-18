@@ -103,7 +103,7 @@ int main(void){
 		mins = wiringPiI2CReadReg8(RTC, MIN_REGISTER);
 		secs = wiringPiI2CReadReg8(RTC, SEC_REGISTER);
 		
-		h = hexCompensation(hours);
+		h = hFormat(hexCompensation(hours));
 		m = hexCompensation(mins);
 		s = hexCompensation(secs);
 		
@@ -214,6 +214,8 @@ void hourInc(void){
 		printf("Interrupt 1 triggered, %x\n",h);
 		//Fetch RTC Time
 		int temp_h = hexCompensation(wiringPiI2CReadReg8(RTC, HOUR_REGISTER));
+		printf(temp_h);
+		printf("Hours")
 		//Increase hours by 1, ensuring not to overflow
 		if(temp_h == 23){
 			temp_h = 00;
@@ -240,6 +242,8 @@ void minInc(void){
 		printf("Interrupt 2 triggered, %x\n", hexCompensation(mins));
 		//Fetch RTC Time
 		int temp_mins = hexCompensation(wiringPiI2CReadReg8(RTC, MIN_REGISTER));
+		printf(temp_mins);
+		printf("mins");
 		//Increase minutes by 1, ensuring not to overflow
 		if(temp_mins == 59){
 			temp_mins = 00;
