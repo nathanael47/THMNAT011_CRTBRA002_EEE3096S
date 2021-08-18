@@ -118,11 +118,27 @@ int main(void){
 		while(1){
 			//turning on the led for 1 sec 
 			digitalWrite(0, LOW);
+			if (secs < 60){
+				secs = secs +1;
+				wiringPiI2CWriteReg8(RTC, SEC_REGISTER, secs);
+			}
+			else{
+				secs = 0;
+				wiringPiI2CWriteReg8(RTC, SEC_REGISTER, secs);
+			}
 			printf("The current time is: %d:%d:%d\n", hours, mins, secs); 
 			delay(1000);
 			//turning off the led for 1 sec 
 			digitalWrite(0,HIGH);
-			
+			if (secs < 60){
+				secs = secs +1;
+				wiringPiI2CWriteReg8(RTC, SEC_REGISTER, secs);
+			}
+			else{
+				secs = 0;
+				wiringPiI2CWriteReg8(RTC, SEC_REGISTER, secs);
+			}
+			printf("The current time is: %d:%d:%d\n", hours, mins, secs); 
 			delay(1000);	
 		}
 	
