@@ -218,9 +218,11 @@ void hourInc(void){
 		
 		//Increase hours by 1, ensuring not to overflow
 		if(temp_h == 23){
+			printf("yep");
 			temp_h = 0;
 		}
 		else{
+			printf("nope");
 			temp_h = temp_h + 1;		
 		}
 		//Write hours back to the RTC
@@ -246,9 +248,11 @@ void minInc(void){
 		
 		//Increase minutes by 1, ensuring not to overflow
 		if(temp_mins == 59){
+			printf("yep");
 			temp_mins = 0;
 		}
 		else{
+			printf("nope");
 			temp_mins = temp_mins + 1;		
 		}
 		//Write minutes back to the RTC
