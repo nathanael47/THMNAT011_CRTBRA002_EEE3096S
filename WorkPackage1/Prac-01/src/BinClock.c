@@ -118,7 +118,7 @@ int main(void){
 		while(1){
 			//turning on the led for 1 sec 
 			digitalWrite(0, LOW);
-			
+			printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
 			delay(1000);
 			//turning off the led for 1 sec 
 			digitalWrite(0,HIGH);
@@ -213,21 +213,23 @@ void hourInc(void){
 	if (interruptTime - lastInterruptTime>200){
 		printf("Interrupt 1 triggered, %x\n",hours);
 		//Fetch RTC Time
-		int temp_h = wiringPiI2CReadReg8(RTC, HOUR_REGISTER);
+		
 		
 		
 		//Increase hours by 1, ensuring not to overflow
-		if(temp_h < 23){
+		if(hours < 23){
+			hours = wiringPiI2CReadReg8(RTC, HOUR_REGISTER);
 			printf("yep");
-			temp_h++;
-			printf(toString(temp_h));
+			hours = hours+1
+			wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, hours);
+			
 		}
 		else{
 			printf("nope");
-			temp_h = 0;		
+			wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, 0);	
 		}
 		//Write hours back to the RTC
-		hours = wiringPiI2CWriteReg8(RTC, HOUR_REGISTER,temp_h);
+		
 		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
 	}
 	lastInterruptTime = interruptTime;
@@ -245,20 +247,21 @@ void minInc(void){
 	if (interruptTime - lastInterruptTime>200){
 		printf("Interrupt 2 triggered, %x\n",mins);
 		//Fetch RTC Time
-		int temp_mins = wiringPiI2CReadReg8(RTC, MIN_REGISTER);
+		
 		
 		//Increase minutes by 1, ensuring not to overflow
 		if(temp_mins < 59){
 			printf("yep");
-			temp_mins ++;
-			printf(toString(temp_mins));
+			mins = wiringPiI2CReadReg8(RTC, MIN_REGISTER);
+			mins = mins + 1
+			wiringPiI2CWriteReg8(RTC, MIN_REGISTER, mins);
 		}
 		else{
 			printf("nope");
-			temp_mins = 0;		
+			wiringPiI2CWriteReg8(RTC, MIN_REGISTER, 0);	
 		}
 		//Write minutes back to the RTC
-		mins = wiringPiI2CWriteReg8(RTC, MIN_REGISTER, temp_mins);
+		
 		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
 	}
 	lastInterruptTime = interruptTime;
