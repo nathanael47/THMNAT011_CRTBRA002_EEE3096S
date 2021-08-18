@@ -242,7 +242,7 @@ void minInc(void){
 		printf("Interrupt 2 triggered, %x\n", hexCompensation(mins));
 		//Fetch RTC Time
 		int temp_mins = hexCompensation(wiringPiI2CReadReg8(RTC, MIN_REGISTER));
-		print(temp_mins);
+		//print(temp_mins);
 		printf("mins");
 		//Increase minutes by 1, ensuring not to overflow
 		if(temp_mins == 59){
