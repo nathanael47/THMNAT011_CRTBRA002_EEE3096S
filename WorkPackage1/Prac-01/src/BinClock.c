@@ -226,7 +226,7 @@ void hourInc(void){
 			temp_h = temp_h + 1;		
 		}
 		//Write hours back to the RTC
-		hours = wiringPiI2CWriteReg8(RTC, HOUR_REGISTER,decCompensation(temp_h));
+		hours = wiringPiI2CWriteReg8(RTC, HOUR_REGISTER,temp_h);
 		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
 	}
 	lastInterruptTime = interruptTime;
@@ -256,7 +256,7 @@ void minInc(void){
 			temp_mins = temp_mins + 1;		
 		}
 		//Write minutes back to the RTC
-		mins = wiringPiI2CWriteReg8(RTC, MIN_REGISTER, decCompensation(temp_mins));
+		mins = wiringPiI2CWriteReg8(RTC, MIN_REGISTER, temp_mins);
 		printf("The current time is: %x:%x:%x\n", hours, mins, secs); 
 	}
 	lastInterruptTime = interruptTime;
