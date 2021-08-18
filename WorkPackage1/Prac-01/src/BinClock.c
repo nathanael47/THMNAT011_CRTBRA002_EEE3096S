@@ -24,14 +24,7 @@ long lastInterruptTime = 0; //Used for button debounce
 int RTC; //Holds the RTC instance
 
 int HH,MM,SS;
-void callback_function(void){
-    long interruptTime = millis();
-    
-    if (interruptTime - lastInterruptTime<1000){
-        printf("Interupt invalid \n");      
-    }
-    lastInterruptTime = interruptTime;
-}
+
 
 
 // Clean up function to avoid damaging used pins
@@ -79,8 +72,8 @@ void initGPIO(void){
 	
 	//Attach interrupts to Buttons
 	//Write your logic here
-	wiringPiISR(5,INT_EDGE_RISING,&callback_function);
-	wiringPiISR(30,INT_EDGE_RISING,&callback_function);
+	wiringPiISR(5,INT_EDGE_RISING,&hourInc);
+	wiringPiISR(30,INT_EDGE_RISING,&minInc);
 
 	printf("BTNS done\n");
 	printf("Setup done\n");
@@ -213,7 +206,7 @@ void hourInc(void){
 	//Debounce
 	long interruptTime = millis();
 
-	if (interruptTime - lastInterruptTime>200){
+	if (interruptTime - lastInterruptTime<1000){
 		printf("Interrupt 1 triggered, %x\n", hours);
 		//Fetch RTC Time
 		hours = wiringPiI2CReadReg8(RTC, HOUR_REGISTER);
@@ -238,7 +231,7 @@ void hourInc(void){
 void minInc(void){
 	long interruptTime = millis();
 
-	if (interruptTime - lastInterruptTime>200){
+	if (interruptTime - lastInterruptTime<1000){
 		printf("Interrupt 2 triggered, %x\n", mins);
 		//Fetch RTC Time
 		mins = wiringPiI2CReadReg8(RTC, MIN_REGISTER);
