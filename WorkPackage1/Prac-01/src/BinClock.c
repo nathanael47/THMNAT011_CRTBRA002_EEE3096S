@@ -118,7 +118,7 @@ int main(void){
 		while(1){
 			//turning on the led for 1 sec 
 			digitalWrite(0, LOW);
-			if (secs < 60){
+			if (secs < 59){
 				secs = secs +1;
 				wiringPiI2CWriteReg8(RTC, SEC_REGISTER, secs);
 			}
@@ -130,7 +130,7 @@ int main(void){
 			delay(1000);
 			//turning off the led for 1 sec 
 			digitalWrite(0,HIGH);
-			if (secs < 60){
+			if (secs < 59){
 				secs = secs +1;
 				wiringPiI2CWriteReg8(RTC, SEC_REGISTER, secs);
 			}
