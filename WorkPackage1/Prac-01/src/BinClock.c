@@ -24,6 +24,14 @@ long lastInterruptTime = 0; //Used for button debounce
 int RTC; //Holds the RTC instance
 
 int HH,MM,SS;
+void callback_function(void){
+    long interruptTime = millis();
+    
+    if (interruptTime - lastInterruptTime>200){
+        printf("Interupt invalid \n");      
+    }
+    lastInterruptTime = interruptTime;
+}
 
 
 // Clean up function to avoid damaging used pins
@@ -32,8 +40,8 @@ void CleanUp(int sig){
 
 	//Set LED to low then input mode
 	//Logic here
-	void digitalWrite(0,LOW);
-	void pinMode(0,INPUT);
+	digitalWrite(0,LOW);
+	pinMode(0,INPUT);
 
 
 	for (int j=0; j < sizeof(BTNS)/sizeof(BTNS[0]); j++) {
@@ -58,7 +66,7 @@ void initGPIO(void){
 	
 	//Set up the LED
 	//Write your Logic here
-	void pinMode(0,OUTPUT);
+	pinMode(0,OUTPUT);
 	
 	
 	printf("LED and RTC done\n");
@@ -124,6 +132,7 @@ int main(void){
 	}
 	return 0;
 }
+
 
 /*
  * Changes the hour format to 12 hours
@@ -209,7 +218,7 @@ void hourInc(void){
 		//Fetch RTC Time
 		hours = wiringPiI2CReadReg8(RTC, HOUR_REGISTER);
 		//Increase hours by 1, ensuring not to overflow
-		if(hours = 23){
+		if(hours == 23){
 			hours = 00;
 		}
 		else{
@@ -234,7 +243,7 @@ void minInc(void){
 		//Fetch RTC Time
 		mins = wiringPiI2CReadReg8(RTC, MIN_REGISTER);
 		//Increase minutes by 1, ensuring not to overflow
-		if(mins = 59){
+		if(mins == 59){
 			mins = 00;
 		}
 		else{
