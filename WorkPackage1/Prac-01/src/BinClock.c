@@ -91,9 +91,9 @@ int main(void){
 
 	//Set random time (3:04PM)
 	//You can comment this file out later
-	wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, 0x13+TIMEZONE);
-	wiringPiI2CWriteReg8(RTC, MIN_REGISTER, 0x4);
-	wiringPiI2CWriteReg8(RTC, SEC_REGISTER, 0x00);
+	wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, decCompensation(0x13)+TIMEZONE);
+	wiringPiI2CWriteReg8(RTC, MIN_REGISTER, decCompensation(0x4));
+	wiringPiI2CWriteReg8(RTC, SEC_REGISTER, decCompensation(0x00));
 	 
 	// Repeat this until we shut down
 	for (;;){
@@ -214,7 +214,7 @@ void hourInc(void){
 		printf("Interrupt 1 triggered, %x\n",h);
 		//Fetch RTC Time
 		int temp_h = hexCompensation(wiringPiI2CReadReg8(RTC, HOUR_REGISTER));
-		print(temp_h);
+		//print(temp_h);
 		printf("Hours");
 		//Increase hours by 1, ensuring not to overflow
 		if(temp_h == 23){
