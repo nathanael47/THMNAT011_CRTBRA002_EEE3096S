@@ -124,6 +124,8 @@ int main(void){
 			}
 			else{
 				secs = 0;
+				mins = mins +1;
+				wiringPiI2CWriteReg8(RTC, MIN_REGISTER, mins);
 				wiringPiI2CWriteReg8(RTC, SEC_REGISTER, secs);
 			}
 			printf("The current time is: %d:%d:%d\n", hours, mins, secs); 
@@ -276,6 +278,8 @@ void minInc(void){
 		else{
 			
 			mins = 0;
+			hours = hours + 1;
+			wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, hours);
 			wiringPiI2CWriteReg8(RTC, MIN_REGISTER, mins);	
 		}
 		//Write minutes back to the RTC
