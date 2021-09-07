@@ -64,8 +64,16 @@ def display_scores(count, raw_data):
 # Setup Pins
 def setup():
     # Setup board mode
+	GPIO.setmode(GPIO.BOARD)	#Define the board set up following a GPIO.Board setup
     # Setup regular GPIO
+	GPIO.setup(11, GPIO.OUT)	#Setup the 1st LED as an output 
+	GPIO.setup(13, GPIO.OUT)	#Setup the 2nd LED as an output 
+	GPIO.setup(15, GPIO.OUT)	#Setup the 3rd LED as an output 
+	GPIO.setup(32, GPIO.OUT)	#Setup the accurcy LED as an output 
+	GPIO.setup(16, GPIO.IN)		#Initialised the first button as an input 
+	GPIO.setup(18, GPIO.IN)		#setup the second  button as an input 
     # Setup PWM channels
+	
     # Setup debouncing and callbacks
     pass
 
