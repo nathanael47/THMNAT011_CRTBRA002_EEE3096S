@@ -92,9 +92,9 @@ def setup():
     
     # Setup debouncing and callbacks
     GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.add_event_detect(16, GPIO.FALLING, callback=btn_guess_pressed(), bouncetime=200)
+    GPIO.add_event_detect(16, GPIO.FALLING, callback=btn_guess_pressed(16), bouncetime=200)
     GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.add_event_detect(18, GPIO.FALLING, callback=btn_increase_pressed(), bouncetime=200)
+    GPIO.add_event_detect(18, GPIO.FALLING, callback=btn_increase_pressed(18), bouncetime=200)
     pass
 
 
