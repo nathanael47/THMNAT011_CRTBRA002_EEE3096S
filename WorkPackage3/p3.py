@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 import random
 import ES2EEPROMUtils
 import os
+import time
 
 # some global variables that need to change as we run the program
 end_of_game = None  # set if the user wins or ends the game
@@ -13,9 +14,9 @@ LED_accuracy = 32
 btn_submit = 16
 btn_increase = 18
 buzzer = None
+value = 0
+user_guess = 0
 eeprom = ES2EEPROMUtils.ES2EEPROM()
-user_guess = 0  #storing the users initial guess
-number_of_guesses = 0 # number of guess the user takes 
 # Print the game banner
 def welcome():
     os.system('clear')
@@ -58,43 +59,56 @@ def display_scores(count, raw_data):
     # print the scores to the screen in the expected format
     print("There are {} scores. Here are the top 3!".format(count))
     # print out the scores in the required format
+    if score_count < 3:
+    	for i in range(0,score_count):
+        	temp = scores[i]
+        	position = i+1
+        	print(str(position) + " - " + temp[0] + " took " + str(temp[1]) + " guesses")
+    elif score_count == 0:
+    	print("No high scores recorded.")
+    else:
+    	for i in range(0,3):
+        	temp = scores[i]
+        	position = i+1
+        	print(str(position) + " - " + temp[0] + " took " + str(temp[1]) + " guesses")
     pass
 
 
 # Setup Pins
 def setup():
     # Setup board mode
-	GPIO.setmode(GPIO.BOARD)	#Define the board set up following a GPIO.Board setup
+    GPIO.setmode(GPIO.BOARD)	#Define the board set up following a GPIO.Board setup
     # Setup regular GPIO
-	GPIO.setup(11, GPIO.OUT)	#Setup the 1st LED as an output 
+    GPIO.setup(11, GPIO.OUT)	#Setup the 1st LED as an output 
     GPIO.output(11, GPIO.LOW)
     
-	GPIO.setup(13, GPIO.OUT)	#Setup the 2nd LED as an output 
+    GPIO.setup(13, GPIO.OUT)	#Setup the 2nd LED as an output 
     GPIO.output(13, GPIO.LOW)
     
-	GPIO.setup(15, GPIO.OUT)	#Setup the 3rd LED as an output 
+    GPIO.setup(15, GPIO.OUT)	#Setup the 3rd LED as an output 
     GPIO.output(15, GPIO.LOW)
-    
-	GPIO.setup(32, GPIO.OUT)	#Setup the accurcy LED as an output 
+    GPIO.setup(32, GPIO.OUT)	#Setup the accurcy LED as an output 
     GPIO.output(32, GPIO.LOW)
     
     GPIO.setup(33, GPIO.OUT)    #setting the buzzer as an output 
     GPIO.output(33, GPIO.LOW)
     
-	GPIO.setup(16, GPIO.IN)		#Initialised the first button as an input 
-	GPIO.setup(18, GPIO.IN)		#setup the second  button as an input 
+    GPIO.setup(16, GPIO.IN)		#Initialised the first button as an input 
+    GPIO.setup(18, GPIO.IN)		#setup the second  button as an input 
  
     # Setup PWM channels
-	buzzerPwm = GPIO.PWM(33, 0.5)  #setting up the buzzer as pwm
+    global buzzerPwm
+    buzzerPwm = GPIO.PWM(33, 0.5)  #setting up the buzzer as pwm
     
-    
+    global LEDPwm
     LEDPwm = GPIO.PWM(32, 1000) #setting up the LED with pwm
     
     # Setup debouncing and callbacks
     GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.add_event_detect(16, GPIO.FALLING, callback=btn_guess_pressed(16), bouncetime=200)
+    GPIO.add_event_detect(16, GPIO.FALLING, callback=btn_guess_pressed, bouncetime=200)
     GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.add_event_detect(18, GPIO.FALLING, callback=btn_increase_pressed(18), bouncetime=200)
+    GPIO.add_event_detect(18, GPIO.FALLING, callback=btn_increase_pressed, bouncetime=200)
+    
     pass
 
 
@@ -102,7 +116,10 @@ def setup():
 def fetch_scores():
     
     # get however many scores there are
-    global score_count = char(ES2EEPROMUtils.read_byte(eeprom, 0));  #reading the first register to get the number of high scores registered.
+    global score_count
+    global scores
+    score_count = eeprom.read_byte(0)  #reading the first register to get the number of high scores registered.
+    print(score_count)
     # Get the scores
     scores = [] #initiating the array to store the scores 
     j = 7   #Variabe to locate the high score values 
@@ -110,8 +127,8 @@ def fetch_scores():
     for i in range(0, score_count) :
         string = ""
         for k in range((i+1)*4,(i+1)*4+3):
-            string = string + char(ES2EEPROMUtils.read_byte(eeprom, k))
-        scores[i] = [string, char(ES2EEPROMUtils.read_byte(eeprom, j))] #reading in the scores and storing in the array 
+            string = string + chr(eeprom.read_byte(k))
+        scores.append([string, eeprom.read_byte(j)]) #reading in the scores and storing in the array 
         j += 4      #incremetation to go to the next register were a score is stored   
         
     # return back the results
@@ -137,7 +154,8 @@ def generate_number():
 
 # Increase button pressed
 def btn_increase_pressed(channel):
-    user_guess += 1;
+    global user_guess 
+    user_guess += 1
     # Increase the value shown on the LEDs
     if user_guess == 1:
         GPIO.output(11, GPIO.LOW)
@@ -167,7 +185,7 @@ def btn_increase_pressed(channel):
         GPIO.output(11, GPIO.HIGH)
         GPIO.output(13, GPIO.HIGH)
         GPIO.output(15, GPIO.HIGH)
-    else
+    else:
         GPIO.output(11, GPIO.LOW)
         GPIO.output(13, GPIO.LOW)
         GPIO.output(15, GPIO.LOW)
@@ -180,10 +198,8 @@ def btn_increase_pressed(channel):
 
 # Guess button
 def btn_guess_pressed(channel):
-    
+    number_of_guesses = 0
     startTime = time.time()
-    while GPIO.input(16) == 0:
-        pass
     timeButton = time.time() - startTime #check how long the button was pressed for 
     # If they've pressed and held the button, clear up the GPIO and take them back to the menu screen
     if timeButton > 0.2:
@@ -200,7 +216,7 @@ def btn_guess_pressed(channel):
             number_of_guesses += 1
             buzzerPwm.stop()
             LEDPwm.stop()
-            print("Congratulations!!! You guessed the correct number")
+            print("Congratulations!!! You guessed the correct number " + str(value))
             name = ""
             while len(name) != 3:
                 name = input("Enter your name. Must be 3 letter")
@@ -209,15 +225,15 @@ def btn_guess_pressed(channel):
             scores.sort(key=lambda x: x[1])
             score_count += 1
             pop_scores
-            ES2EEPROMUtils.write_byte(eeprom, 0, ord(score_count))
+            eeprom.write_byte(0, score_count)
             for h in range(0, score_count):
                 temp = score[h]
                 temp_name = temp[0]
                 temp_count = 0;
                 for t in range((h+1)*4,(h+1)*4+3):
-                    ES2EEPROMUtils.write_byte(eeprom, t, ord(temp_name[temp_count]))
+                    eeprom.write_byte(t, ord(temp_name[temp_count]))
                     temp_count += 1
-                ES2EEPROMUtils.write_byte(eeprom, pop_scores, ord(temp[1]))
+                eeprom.write_byte(pop_scores, temp[1])
                 pop_scores += 4
         else:
             number_of_guesses += 1
