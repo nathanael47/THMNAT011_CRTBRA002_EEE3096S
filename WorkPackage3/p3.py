@@ -59,24 +59,28 @@ def display_scores(count, raw_data):
     # print the scores to the screen in the expected format
     print("There are {} scores. Here are the top 3!".format(count))
     # print out the scores in the required format
-    if score_count < 3:
-    	for i in range(0,score_count):
-        	temp = scores[i]
+    if count < 3:
+    	for i in range(0,count):
+        	temp = raw_data[i]
         	position = i+1
         	print(str(position) + " - " + temp[0] + " took " + str(temp[1]) + " guesses")
-    elif score_count == 0:
+    elif count == 0:
     	print("No high scores recorded.")
     else:
     	for i in range(0,3):
-        	temp = scores[i]
+        	temp = raw_data[i]
         	position = i+1
         	print(str(position) + " - " + temp[0] + " took " + str(temp[1]) + " guesses")
     menu()
+    GPIO.cleanup()
+    setup()
     pass
 
 
 # Setup Pins
 def setup():
+    global number_of_guesses
+    number_of_guesses = 0
     user_guess = 0
     # Setup board mode
     GPIO.setmode(GPIO.BOARD)	#Define the board set up following a GPIO.Board setup
@@ -117,8 +121,6 @@ def setup():
 def fetch_scores():
     
     # get however many scores there are
-    global score_count
-    global scores
     score_count = eeprom.read_byte(0)  #reading the first register to get the number of high scores registered.
     # Get the scores
     scores = [] #initiating the array to store the scores 
@@ -198,7 +200,7 @@ def btn_increase_pressed(channel):
 
 # Guess button
 def btn_guess_pressed(channel):
-    number_of_guesses = 0
+    
     score_count, scores = fetch_scores()
     startTime = time.time()
     timeButton = time.time() - startTime #check how long the button was pressed for 
@@ -284,13 +286,13 @@ def trigger_buzzer():
     # If the user is off by an absolute value of 1, the buzzer should sound 4 times a second
     if abs(user_guess-value) ==  3:
         buzzerPwm.start(50)
-        buzzerPwm.ChangeFrequency(3000)
+        buzzerPwm.ChangeFrequency(1)
     elif abs(user_guess-value) ==  2:
         buzzerPwm.start(50)
-        buzzerPwm.ChangeFrequency(2000)
+        buzzerPwm.ChangeFrequency(2)
     elif abs(user_guess-value) ==  1:
         buzzerPwm.start(50)
-        buzzerPwm.ChangeFrequency(1000)
+        buzzerPwm.ChangeFrequency(4)
     pass
 
 
