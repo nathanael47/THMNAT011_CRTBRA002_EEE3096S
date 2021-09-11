@@ -98,7 +98,7 @@ def setup():
     GPIO.output(32, GPIO.LOW)
     
     GPIO.setup(33, GPIO.OUT)    #setting the buzzer as an output 
-    GPIO.output(33, GPIO.LOW)
+    #GPIO.output(33, GPIO.LOW)
     
     GPIO.setup(16, GPIO.IN)		#Initialised the first button as an input 
     GPIO.setup(18, GPIO.IN)		#setup the second  button as an input 
@@ -106,6 +106,7 @@ def setup():
     # Setup PWM channels
     global buzzerPwm
     buzzerPwm = GPIO.PWM(33, 1)  #setting up the buzzer as pwm
+    buzzerPwm.stop()
     #buzzerPwm.start(50)
     global LEDPwm
     LEDPwm = GPIO.PWM(32, 1000) #setting up the LED with pwm
@@ -299,16 +300,16 @@ def trigger_buzzer():
     # If the user is off by an absolute value of 2, the buzzer should sound twice every second
     # If the user is off by an absolute value of 1, the buzzer should sound 4 times a second
     if abs(user_guess-value) ==  3:
-    	GPIO.output(33, GPIO.HIGH)
-    	#buzzerPwm.start(50)
+    	#GPIO.output(33, GPIO.HIGH)
+    	buzzerPwm.start(50)
     	buzzerPwm.ChangeFrequency(1)
     elif abs(user_guess-value) ==  2:
-    	GPIO.output(33, GPIO.HIGH)
-    	#buzzerPwm.start(50)
+    	#GPIO.output(33, GPIO.HIGH)
+    	buzzerPwm.start(50)
     	buzzerPwm.ChangeFrequency(2)
     elif abs(user_guess-value) ==  1:
-    	GPIO.output(33, GPIO.HIGH)
-    	#buzzerPwm.start(50)
+    	#GPIO.output(33, GPIO.HIGH)
+    	buzzerPwm.start(50)
     	buzzerPwm.ChangeFrequency(4)
     else:
     	pass
