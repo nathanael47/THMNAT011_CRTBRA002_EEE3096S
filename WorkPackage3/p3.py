@@ -14,7 +14,9 @@ LED_accuracy = 32
 btn_submit = 16
 btn_increase = 18
 #buzzer = None
+global user_guess, number_of_guesses
 user_guess = 0
+number_of_guesses = 0
 eeprom = ES2EEPROMUtils.ES2EEPROM()
 # Print the game banner
 def welcome():
@@ -79,7 +81,7 @@ def display_scores(count, raw_data):
 
 # Setup Pins
 def setup():
-    global number_of_guesses
+    global user_guess, number_of_guesses
     number_of_guesses = 0
     user_guess = 0
     # Setup board mode
@@ -101,7 +103,7 @@ def setup():
     
     GPIO.setup(16, GPIO.IN)		#Initialised the first button as an input 
     GPIO.setup(18, GPIO.IN)		#setup the second  button as an input 
-    #eeprom.clear(2048)
+   # eeprom.clear(2048)
     # Setup PWM channels
     global buzzerPwm
     buzzerPwm = GPIO.PWM(33, 0.5)  #setting up the buzzer as pwm
@@ -156,7 +158,7 @@ def generate_number():
 
 # Increase button pressed
 def btn_increase_pressed(channel):
-    global user_guess 
+    global user_guess
     user_guess += 1
     # Increase the value shown on the LEDs
     if user_guess == 1:
@@ -200,7 +202,9 @@ def btn_increase_pressed(channel):
 
 # Guess button
 def btn_guess_pressed(channel):
-    
+    global number_of_guesses
+    global user_guess
+    global value
     score_count, scores = fetch_scores()
     startTime = time.time()
     timeButton = time.time() - startTime #check how long the button was pressed for 
@@ -259,6 +263,8 @@ def btn_guess_pressed(channel):
 
 # LED Brightness
 def accuracy_leds():
+    global user_guess
+    global value
     percentage = 0
     
     # Set the brightness of the LED based on how close the guess is to the answer
@@ -278,6 +284,8 @@ def accuracy_leds():
 
 # Sound Buzzer
 def trigger_buzzer():
+    global user_guess
+    global value
     # The buzzer operates differently from the LED
     # While we want the brightness of the LED to change(duty cycle), we want the frequency of the buzzer to change
     # The buzzer duty cycle should be left at 50%
