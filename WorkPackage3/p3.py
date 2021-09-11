@@ -15,8 +15,9 @@ btn_submit = 16
 btn_increase = 18
 #buzzer = None
 #global user_guess, number_of_guesses
-#user_guess = 0
-#number_of_guesses = 0
+value = 0
+user_guess = 0
+number_of_guesses = 0
 eeprom = ES2EEPROMUtils.ES2EEPROM()
 # Print the game banner
 def welcome():
@@ -34,6 +35,7 @@ def welcome():
 # Print the game menu
 def menu():
     global end_of_game
+    global value
     option = input("Select an option:   H - View High Scores     P - Play Game       Q - Quit\n")
     option = option.upper()
     if option == "H":
@@ -46,11 +48,6 @@ def menu():
         print("Starting a new round!")
         print("Use the buttons on the Pi to make and submit your guess!")
         print("Press and hold the guess button to cancel your game")
-        global user_guess
-        user_guess = 0
-        global number_of_guesses
-        number_of_guesses = 0
-        global value
         value = generate_number()
         while not end_of_game:
             pass
@@ -101,15 +98,15 @@ def setup():
     GPIO.output(32, GPIO.LOW)
     
     GPIO.setup(33, GPIO.OUT)    #setting the buzzer as an output 
-    #GPIO.output(33, GPIO.LOW)
+    GPIO.output(33, GPIO.LOW)
     
     GPIO.setup(16, GPIO.IN)		#Initialised the first button as an input 
     GPIO.setup(18, GPIO.IN)		#setup the second  button as an input 
    # eeprom.clear(2048)
     # Setup PWM channels
     global buzzerPwm
-    buzzerPwm = GPIO.PWM(33, 0.5)  #setting up the buzzer as pwm
-    buzzerPwm.start(50)
+    buzzerPwm = GPIO.PWM(33, 1)  #setting up the buzzer as pwm
+    #buzzerPwm.start(50)
     global LEDPwm
     LEDPwm = GPIO.PWM(32, 1000) #setting up the LED with pwm
     # Setup debouncing and callbacks
@@ -160,7 +157,7 @@ def generate_number():
 
 # Increase button pressed
 def btn_increase_pressed(channel):
-    
+    global user_guess
     user_guess += 1
     # Increase the value shown on the LEDs
     if user_guess == 1:
@@ -195,7 +192,7 @@ def btn_increase_pressed(channel):
         GPIO.output(11, GPIO.LOW)
         GPIO.output(13, GPIO.LOW)
         GPIO.output(15, GPIO.LOW)
-        user_guess = 0;
+        user_guess = 0
     
     # You can choose to have a global variable store the user's current guess, 
     # or just pull the value off the LEDs when a user makes a guess
@@ -204,9 +201,13 @@ def btn_increase_pressed(channel):
 
 # Guess button
 def btn_guess_pressed(channel):
-    
+    global number_of_guesses
+    global user_guess
+    global value
     score_count, scores = fetch_scores()
     startTime = time.time()
+    while GPIO.input(16) == 0:
+    	pass
     timeButton = time.time() - startTime #check how long the button was pressed for 
     # If they've pressed and held the button, clear up the GPIO and take them back to the menu screen
     if timeButton > 0.2:
@@ -222,7 +223,6 @@ def btn_guess_pressed(channel):
         if user_guess == value:
             number_of_guesses += 1
             buzzerPwm.stop()
-            LEDPwm.stop()
             print("Congratulations!!! You guessed the correct number " + str(value))
             name = ""
             #while len(name) != 3:
@@ -242,6 +242,8 @@ def btn_guess_pressed(channel):
                 eeprom.write_byte(pop_scores, temp[1])
                 pop_scores += 4
             GPIO.cleanup()
+            user_guess = 0
+            LEDPwm.stop()
             setup()
             menu()
         else:
@@ -263,27 +265,33 @@ def btn_guess_pressed(channel):
 
 # LED Brightness
 def accuracy_leds():
-   
+    global value
+    global user_guess
     percentage = 0
     
     # Set the brightness of the LED based on how close the guess is to the answer
     # - The % brightness should be directly proportional to the % "closeness"
     # - For example if the answer is 6 and a user guesses 4, the brightness should be at 4/6*100 = 66%
     # - If they guessed 7, the brightness would be at ((8-7)/(8-6)*100 = 50%
-    if user_guess < value :
-        percentage = ((user_guess/value)*100)
-        LEDPwm.start(percentage)
-        
+    if user_guess < value and user_guess != 0 :
+    	percentage = ((user_guess/value)*100)
+    	LEDPwm.start(percentage)
     elif user_guess > value:
-        percentage =(((8-user_guess)/(8-value))*100)
-        LEDPwm.start(percentage)  
+    	percentage =(((8-user_guess)/(8-value))*100)
+    	LEDPwm.start(percentage) 
+    elif user_guess < value and user_guess == 0:
+    	percentage = ((user_guess+1)/(value+1))*100
+    	LEDPwm.start(percentage)
+    elif user_guess == value:
+    	LEDPwm.start(100)
     else:
-        LEDPwm.start(percentage)
+    	LEDPwm.start(percentage)
     pass
 
 # Sound Buzzer
 def trigger_buzzer():
-    
+    global user_guess
+    global value
     # The buzzer operates differently from the LED
     # While we want the brightness of the LED to change(duty cycle), we want the frequency of the buzzer to change
     # The buzzer duty cycle should be left at 50%
@@ -291,14 +299,19 @@ def trigger_buzzer():
     # If the user is off by an absolute value of 2, the buzzer should sound twice every second
     # If the user is off by an absolute value of 1, the buzzer should sound 4 times a second
     if abs(user_guess-value) ==  3:
-        buzzerPwm.start(50)
-        buzzerPwm.ChangeFrequency(1)
+    	GPIO.output(33, GPIO.HIGH)
+    	#buzzerPwm.start(50)
+    	buzzerPwm.ChangeFrequency(1)
     elif abs(user_guess-value) ==  2:
-        buzzerPwm.start(50)
-        buzzerPwm.ChangeFrequency(2)
+    	GPIO.output(33, GPIO.HIGH)
+    	#buzzerPwm.start(50)
+    	buzzerPwm.ChangeFrequency(2)
     elif abs(user_guess-value) ==  1:
-        buzzerPwm.start(50)
-        buzzerPwm.ChangeFrequency(4)
+    	GPIO.output(33, GPIO.HIGH)
+    	#buzzerPwm.start(50)
+    	buzzerPwm.ChangeFrequency(4)
+    else:
+    	pass
     pass
 
 
